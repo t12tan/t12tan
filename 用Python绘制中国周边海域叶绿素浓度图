@@ -1,0 +1,35 @@
+import netCDF4 as nc
+import numpy as np
+from mpl_toolkits.basemap import Basemap
+import matplotlib.pyplot as plt
+file=nc.Dataset("A20060012006365.L3m_YR_CHL_chlor_a_9km.nc")
+# print(file)
+
+chlor=(file.variables["chlor_a"][:]) #叶绿素浓度
+lons=(file.variables["lon"][:]) #经度
+lats=(file.variables["lat"][:]) #维度
+print((lons))
+lons=np.concatenate((lons[2160:],lons[:2160]+360)) #掉转经度数据
+chlor=np.concatenate((chlor[:,2160:],chlor[:,:2160]),axis=1)
+print(chlor.shape)
+#对叶绿素取对数
+chl=np.log(chlor)
+
+#对经纬度进行编织
+lon,lat=np.meshgrid(lons,lats)
+#画图
+m=Basemap(llcrnrlon=102,llcrnrlat=-2,urcrnrlon=130,urcrnrlat=55,lat_1=20,lat_2=55,lon_0=140,projection="lcc",resolution="l")
+lon,lat=m(lon,lat) #把实际经纬度坐标转换成投影地图下的经纬度坐标
+
+#为地图添加上海岸线和经纬网络
+m.drawparallels(np.arange(-2.,56.,9.),labels=[1,0,0,0],fontsize=10) #纬线
+m.drawmeridians(np.arange(102.,131.,6.),labels=[0,0,0,1],fontsize=10) #经线
+m.drawcoastlines() #海岸线
+m.fillcontinents(color="white")
+cs=m.pcolor(lon,lat,chl,cmap="jet") #绘制浓度分布
+cbar=m.colorbar(cs,location="right",label="Log Chla(\mug/L)",pad="10%") #显示颜色图例
+plt.title("Global distribution of chlor_a",fontsize="10") #添加标题
+
+#重画一遍图片
+# plt.savefig("D:\\中国地质大学\\海洋遥感\\叶绿素全球图\\1.2.png",dpi=300,bbox_inches="tight") #保存图片，去掉图片周围空白
+plt.show()
