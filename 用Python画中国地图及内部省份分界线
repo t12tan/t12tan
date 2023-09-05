@@ -1,0 +1,21 @@
+import geopandas as gpd
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+
+# 防止乱码
+mpl.rcParams["font.sans-serif"] = ["SimHei"]
+mpl.rcParams["axes.unicode_minus"] = False
+
+# 从GeoJSON文件加载中国地图数据
+china_map = gpd.read_file('100000.geoJson')
+
+# 绘制中国地图
+fig, ax = plt.subplots(1, 1, figsize=(12, 12))
+china_map.plot(ax=ax, color='lightgray', edgecolor='black')
+
+# 设置图形标题
+ax.set_title('中国地图')
+
+# 显示图形
+plt.axis('off')  # 隐藏坐标轴
+plt.show()
