@@ -1,0 +1,35 @@
+% 创建主窗口
+mainFigure = figure('Name', '生成 n 边形', 'NumberTitle', 'off', 'Position', [100, 100, 400, 200]);
+
+% 创建输入框
+uicontrol('Style', 'edit', 'Position', [50, 100, 100, 40], 'Tag', 'nEdit');
+
+% 创建确认按钮
+uicontrol('Style', 'pushbutton', 'String', '确认', 'Position', [200, 100, 100, 40], 'Callback', @generatePolygon);
+
+% 显示主窗口
+movegui(mainFigure, 'center');
+
+% 回调函数，生成 n 边形
+function generatePolygon(~, ~)
+    % 获取用户输入的 n
+    nEdit = findobj('Tag', 'nEdit');
+    n = str2double(get(nEdit, 'String'));
+    
+    if isnan(n) || n <= 0 || mod(n, 1) ~= 0
+        errordlg('请输入一个正整数 n', '错误', 'modal');
+        return;
+    end
+    
+    % 生成 n 边形的坐标
+    theta = linspace(0, 2*pi, n+1);
+    x = cos(theta);
+    y = sin(theta);
+    
+    % 创建新窗口绘制 n 边形，并关闭坐标轴显示
+    polygonFigure = figure('Name', [num2str(n) ' 边形'], 'NumberTitle', 'off', 'Position', [500, 100, 400, 400]);
+    plot(x, y, '-o');
+    axis off; % 关闭坐标轴显示
+    axis equal;
+    title([num2str(n) ' 边形']);
+end
