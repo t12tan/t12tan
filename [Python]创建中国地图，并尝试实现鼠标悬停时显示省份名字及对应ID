@@ -1,0 +1,54 @@
+from pyecharts.charts import Geo
+import webbrowser as wb
+from pyecharts import options as opts
+from pyecharts.globals import GeoType
+from pyecharts.commons.utils import JsCode
+
+# 数据示例：省份名称和对应的ID，根据需要进行设置
+data = [
+    ("北京", "110000"),
+    ("天津", "120000"),
+    ("上海", "310000"),
+    # 其他省份数据...
+]
+
+# 自定义格式化函数，仅显示ID
+tooltip_formatter = JsCode("function(params) { return params.name + '<br>ID: ' + params.value[2]; }")
+
+# 定义函数
+def geo_effectscatter() -> Geo:
+    c = (
+        Geo()
+        .add_schema(
+            maptype="china",
+            itemstyle_opts=opts.ItemStyleOpts(color="#323c48", border_color="#111"),
+        )
+        .set_series_opts(label_opts=opts.LabelOpts(is_show=False))
+        .set_global_opts(
+            title_opts=opts.TitleOpts(title="中国地图"),
+            tooltip_opts=opts.TooltipOpts(
+                is_show=True,
+                formatter=tooltip_formatter,
+            ),
+        )
+    )
+
+    # 添加散点数据
+    for province, province_id in data:
+        c.add(
+            province,
+            [(province, province_id)],
+            type_=GeoType.EFFECT_SCATTER,
+            symbol_size=10,
+        )
+
+    return c
+
+# 生成对象
+c = geo_effectscatter()
+
+# 渲染地图
+c.render("China_map.html")
+
+# 打开文件
+wb.open_new_tab("China_map.html")
